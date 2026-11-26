@@ -1,7 +1,7 @@
 /* Arranque: lienzo, bucle de dibujo (30 cps en la TV), toques y boton de sonido. */
 (function () {
   "use strict";
-  N.VER = "3";
+  N.VER = "4";
   var cv = document.getElementById("c"), g = cv.getContext("2d", { alpha: false });
   var cam = N.cam;
 

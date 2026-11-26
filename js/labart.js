@@ -346,21 +346,32 @@
       var w = t.x1 - t.x0 + 40, h = 560;
       var c = fgSprite(w, h, k, function (g) {
         var ox = 20, top = 300;
-        g.fillStyle = "rgba(40,30,30,0.12)"; g.fillRect(ox + 10, h - 40, w - 60, 30);
-        box(g, ox, top, w - 40, 34, "#cfd2d6", { r: 6, grad: ["#e2e4e7", "#c2c6cc"] });
-        box(g, ox + 10, top + 34, w - 60, 40, "#b9bdc4", { r: 3 });
-        [ox + 30, w - 60].forEach(function (x) { box(g, x, top + 70, 22, h - top - 110, "#8d9198", { r: 4 }); });
-        t.monitors.forEach(function (mx, i) {
-          var x = mx - t.x0 + ox;
-          box(g, x - 16, top - 60, 32, 64, "#2b2d33", { r: 4 });
-          box(g, x - 95, top - 205, 190, 150, "#26282e", { r: 8 });
-          var sc = (t.screens && t.screens[i]) || "code";
-          var sx = x - 84, sy = top - 194, sw = 168, shh = 126;
-          if (sc === "pink") { g.fillStyle = "#f6c8dc"; g.fillRect(sx, sy, sw, shh); g.fillStyle = "#d9709a"; for (var q = 0; q < 20; q++) g.fillRect(sx + 8 + (q % 5) * 32, sy + 12 + Math.floor(q / 5) * 28, 22, 18); }
-          else if (sc === "tree") { g.fillStyle = "#f4f7fa"; g.fillRect(sx, sy, sw, shh); for (var j = 0; j < 6; j++) line(g, sx + 14 + j * 10, sy + 14 + j * 18, sx + sw - 20, sy + 14 + j * 18, ["#c23a3a", "#3a6fc2", "#2a8a4a"][j % 3], 3); }
-          else { g.fillStyle = "#1c2330"; g.fillRect(sx, sy, sw, shh); for (j = 0; j < 9; j++) { g.fillStyle = ["#7fe08a", "#8cc8f0", "#f2c94c", "#d0d6e0"][j % 4]; g.fillRect(sx + 10 + (j % 3) * 8, sy + 10 + j * 13, 40 + ((j * 37) % 90), 6); } }
+        g.fillStyle = "rgba(40,30,30,0.12)"; g.fillRect(ox + 10, h - 26, w - 60, 24);
+        // monitores: la mayoria de espaldas (miran a quienes estan sentados), uno de lado y uno de frente
+        t.monitors.forEach(function (m) {
+          var x = m.x - t.x0 + ox, bot = top - 34, mw = 160, mh = 110;
+          box(g, x - 12, bot - 4, 24, 40, "#2b2d33", { r: 4, lw: 2 });
+          box(g, x - 46, top - 10, 92, 12, "#2b2d33", { r: 5, lw: 2 });
+          if (m.k === "back") {
+            box(g, x - mw / 2, bot - mh, mw, mh, "#2a2c32", { r: 10, grad: ["#3a3d45", "#24262b"] });
+            box(g, x - 34, bot - mh * 0.62, 68, 44, "#33363e", { r: 8, lw: 1.5 });
+            circle(g, x, bot - mh * 0.4, 6, "#4a4e58");
+          } else if (m.k === "side") {
+            var d = m.dir || 1;
+            g.fillStyle = "#2a2c32"; g.beginPath(); g.moveTo(x - 14, bot - mh); g.lineTo(x + 14, bot - mh + 8); g.lineTo(x + 14, bot - 6); g.lineTo(x - 14, bot); g.closePath(); g.fill();
+            g.strokeStyle = OUT; g.lineWidth = 2.5; g.stroke();
+            line(g, x + d * 15, bot - mh + 10, x + d * 15, bot - 8, "rgba(140,200,255,0.85)", 4);
+          } else {
+            box(g, x - mw / 2, bot - mh, mw, mh, "#26282e", { r: 8 });
+            var sx = x - mw / 2 + 9, sy = bot - mh + 9, sw = mw - 18, shh = mh - 18;
+            g.fillStyle = "#1c2330"; g.fillRect(sx, sy, sw, shh);
+            for (var j = 0; j < 7; j++) { g.fillStyle = ["#7fe08a", "#8cc8f0", "#f2c94c", "#d0d6e0"][j % 4]; g.fillRect(sx + 8 + (j % 3) * 7, sy + 8 + j * 12, 30 + ((j * 37) % 70), 5); }
+          }
         });
-        box(g, ox + 60, top - 8, 180, 14, "#3a3d44", { r: 4, lw: 2 }); box(g, w - 300, top - 8, 180, 14, "#3a3d44", { r: 4, lw: 2 });
+        // cubierta y panel frontal (tapa las piernas de quienes estan sentados)
+        box(g, ox, top, w - 40, 34, "#cfd2d6", { r: 6, grad: ["#e6e8eb", "#c6cad0"] });
+        box(g, ox + 14, top + 32, w - 68, h - top - 46, "#c3c7cd", { r: 6, grad: ["#ccd0d6", "#b4b9c0"] });
+        for (var px = ox + 14 + (w - 68) / 3; px < w - 60; px += (w - 68) / 3) line(g, px, top + 44, px, h - 22, "rgba(120,125,135,0.35)", 3);
         box(g, w / 2 - 30, top - 30, 40, 34, "#e85a5a", { r: 6, lw: 2 });
       });
       list.push({ c: c, x: t.x0 - 20, y: L.deskTop - 300, w: w, h: h, z: L.deskZ });

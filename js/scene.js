@@ -15,12 +15,12 @@
     ],
     deskTop: 1225, deskZ: 1630,
     deskTables: [
-      { x0: 6320, x1: 7120, monitors: [6380, 6735, 7080], screens: ["code", "pink", "tree"] },
-      { x0: 7240, x1: 7680, monitors: [7295, 7630], screens: ["code", "tree"] }
+      { x0: 6320, x1: 7120, monitors: [{ x: 6385, k: "side", dir: 1 }, { x: 6725, k: "back" }, { x: 7070, k: "front" }] },
+      { x0: 7240, x1: 7680, monitors: [{ x: 7290, k: "back" }, { x: 7635, k: "side", dir: -1 }] }
     ],
     desksList: [
       { id: "D1", x: 6545, hip: 1360, hw: 560, clip: 1225, chair: "#2b2d33" },
-      { id: "D2", x: 6915, hip: 1360, hw: 560, clip: 1225, chair: "#3a2f4a" },
+      { id: "D2", x: 6895, hip: 1360, hw: 560, clip: 1225, chair: "#3a2f4a" },
       { id: "D3", x: 7465, hip: 1360, hw: 560, clip: 1225, chair: "#2b2d33" }
     ],
     spots: {
@@ -32,7 +32,7 @@
       window: [4780, 500, 1340, 840],
       glass: [4822, 545, 428, 765],
       blinds: [5262, 545, 816, 765],
-      monitor: [6640, 1020, 190, 150],
+      monitor: [6990, 1050, 160, 120],
       board: [6400, 620, 900, 380],
       shelf: [8090, 590, 740, 210],
       poster: [8920, 500, 420, 560],
