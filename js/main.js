@@ -1,7 +1,7 @@
 /* Arranque: lienzo, bucle de dibujo (30 cps en la TV), toques y boton de sonido. */
 (function () {
   "use strict";
-  N.VER = "1";
+  N.VER = "2";
   var cv = document.getElementById("c"), g = cv.getContext("2d", { alpha: false });
   var cam = N.cam;
 
@@ -23,12 +23,12 @@
     N.buildPeople(Math.round(1050 * s0 * 1.1));
     N.buildCritters(Math.round(260 * s0 * 1.6), Math.round(900 * s0 * 1.1));
     await N.loadScenes(prog);
-    await N.loadPlush();
-    N.fx.initLights(); N.fx.initWindow(); N.fx.initTV(); N.fx.initFlasks();
+    N.buildPlush(Math.min(1, N.CH / 2160) * 3.4);
+    N.fx.initLights(); N.fx.initWindow(); N.fx.initTV(); N.fx.initFlasks(); N.fx.initClock();
     N.director.start();
     loadEl.style.opacity = 0; setTimeout(function () { loadEl.style.display = "none"; }, 1200);
     var sim = parseFloat(N.Q.get("sim"));
-    if (sim) { N.TURBO = 0.0001; await N.sim(sim); }
+    if (sim) { await N.sim(sim); N.ROT = 0; N.TURBO = 0.0001; }
     last = performance.now(); requestAnimationFrame(frame);
     if (N.music.on) { N.music.init(); }
   }
@@ -79,17 +79,23 @@
     g.fillStyle = "#101214"; g.fillRect(0, 0, N.CW, N.CH);
     var s = cam.s;
     g.setTransform(s, 0, 0, s, -cam.x * s, -cam.y * s);
-    if (S && S.bg) S.bg.draw(g);
-    var list = N.actors.filter(function (a) { return a.draw && !a.layer && (a.scene === cam.scene); });
-    list.sort(function (a, b) { return a.z - b.z; });
-    var x0 = cam.x - 600, x1 = cam.x + cam.vw + 600;
-    for (var i = 0; i < list.length; i++) {
-      var a = list[i];
-      if (a.x != null && (a.x < x0 || a.x > x1)) continue;
-      a.draw(g);
+    // el lab es circular: se dibuja la vuelta k (y la siguiente si la vista cruza el empalme)
+    var W = N.LAB.w, k0 = Math.floor(cam.x / W), k1 = Math.floor((cam.x + cam.vw) / W), k, i, a;
+    for (k = k0; k <= k1; k++) { g.save(); g.translate(k * W, 0); if (S && S.bg) S.bg.draw(g, k * W); g.restore(); }
+    var list = [], x0 = cam.x - 700, x1 = cam.x + cam.vw + 700;
+    for (i = 0; i < N.actors.length; i++) {
+      a = N.actors[i];
+      if (!a.draw || a.layer || a.scene !== cam.scene) continue;
+      if (a.static) { for (k = k0; k <= k1; k++) list.push({ a: a, k: k, z: a.z }); }
+      else if (a.x == null || (a.x > x0 && a.x < x1)) list.push({ a: a, k: 0, z: a.z });
+    }
+    list.sort(function (p, q) { return p.z - q.z; });
+    for (i = 0; i < list.length; i++) {
+      var e = list[i];
+      if (e.k) { g.save(); g.translate(e.k * W, 0); e.a.draw(g); g.restore(); } else e.a.draw(g);
     }
     N.fx.draw(g, false); N.fx.draw(g, true);
-    N.debugDraw(g);
+    for (k = k0; k <= k1; k++) { g.save(); g.translate(k * W, 0); N.debugDraw(g); g.restore(); }
     g.setTransform(1, 0, 0, 1, 0, 0);
     for (i = 0; i < N.actors.length; i++) { a = N.actors[i]; if (a.layer === "screen" && a.draw && a.scene === cam.scene) a.draw(g); }
     if (N.fade > 0) { g.fillStyle = "rgba(250,247,240," + N.fade + ")"; g.fillRect(0, 0, N.CW, N.CH); }

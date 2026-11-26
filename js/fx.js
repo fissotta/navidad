@@ -74,7 +74,7 @@
       snowAcc--;
       P({ type: "snow", x: N.cam.x + N.rnd(0, N.cam.vw), y: N.cam.y - 20, vx: N.rnd(-10, 10), vy: N.rnd(45, 90), s: N.rnd(3, 8), ph: N.rnd(0, 6), life: N.cam.vh / 60, a: N.rnd(0.5, 0.9), fin: 1, top: true });
     }
-    var gl = L.spots.glass;
+    var g0 = L.spots.glass, gx = N.near(g0[0]), gl = [gx, g0[1], g0[2], g0[3]];
     outAcc += dt * FX.outsideSnow * 25;
     while (outAcc > 1) {
       outAcc--;
@@ -112,7 +112,7 @@
   FX.initLights = function () {
     L.garlands.forEach(function (def) {
       var gl = buildGarland(def);
-      N.add({ scene: "lab", z: def.pts[0][1], kind: "garland", gl: gl, draw: function (g) {
+      N.add({ scene: "lab", static: true, z: def.pts[0][1], kind: "garland", gl: gl, draw: function (g) {
         var W = this.gl.wire, B = this.gl.bulbs, lt = FX.lights, t = N.time;
         g.save();
         g.strokeStyle = "rgba(40,60,40,0.75)"; g.lineWidth = 2.2; g.beginPath();
@@ -144,7 +144,7 @@
   FX.initWindow = function () {
     var gl = L.spots.glass, stars = [];
     for (var i = 0; i < 40; i++) stars.push([gl[0] + Math.random() * gl[2], gl[1] + Math.random() * gl[3] * 0.6, Math.random() * 6]);
-    N.add({ scene: "lab", z: 1, draw: function (g) {
+    N.add({ scene: "lab", static: true, z: 1, draw: function (g) {
       var n = N.night || 0;
       if (n < 0.02) return;
       g.save(); g.globalAlpha = n * 0.8;
@@ -169,7 +169,7 @@
     var x = tvR[0] + 8, y = tvR[1] + 8, w = tvR[2] - 16, h = tvR[3] - 18;
     var flames = [];
     for (var i = 0; i < 16; i++) flames.push({ x: Math.random(), ph: Math.random() * 6, s: 0.5 + Math.random() * 0.5 });
-    N.add({ scene: "lab", z: 2, draw: function (g) {
+    N.add({ scene: "lab", static: true, z: 2, draw: function (g) {
       if (TV.ch === "off") return;
       var t = N.time - TV.t0, a = Math.min(1, t / 1.2);
       g.save(); g.globalAlpha = a; g.beginPath(); g.rect(x, y, w, h); g.clip();
@@ -227,11 +227,32 @@
     } });
   };
 
+  /* ---------- reloj de pared con la hora real ---------- */
+  FX.initClock = function () {
+    var r = L.spots.clock, cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2, R = r[2] / 2;
+    N.add({ scene: "lab", static: true, z: 3, draw: function (g) {
+      var d = new Date(), h = d.getHours() % 12 + d.getMinutes() / 60, m = d.getMinutes() + d.getSeconds() / 60;
+      g.save();
+      g.fillStyle = "rgba(60,40,30,0.1)"; g.beginPath(); g.arc(cx + 6, cy + 8, R, 0, 7); g.fill();
+      g.fillStyle = "#fbfaf6"; g.strokeStyle = "#c8262e"; g.lineWidth = 10; g.beginPath(); g.arc(cx, cy, R - 5, 0, 7); g.fill(); g.stroke();
+      g.fillStyle = "#6a5a5a"; for (var i = 0; i < 12; i++) { var a = i / 12 * Math.PI * 2; g.beginPath(); g.arc(cx + Math.cos(a) * (R - 22), cy + Math.sin(a) * (R - 22), i % 3 ? 3 : 5, 0, 7); g.fill(); }
+      g.strokeStyle = "#3a2a2a"; g.lineCap = "round";
+      var ha = h / 12 * Math.PI * 2 - Math.PI / 2, ma = m / 60 * Math.PI * 2 - Math.PI / 2;
+      g.lineWidth = 8; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(ha) * R * 0.45, cy + Math.sin(ha) * R * 0.45); g.stroke();
+      g.lineWidth = 5; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(ma) * R * 0.68, cy + Math.sin(ma) * R * 0.68); g.stroke();
+      g.fillStyle = "#c8262e"; g.beginPath(); g.arc(cx, cy, 6, 0, 7); g.fill();
+      // ramita de acebo
+      g.fillStyle = "#3f8a4a"; g.beginPath(); g.ellipse(cx - 24, cy - R + 4, 16, 8, -0.4, 0, 7); g.ellipse(cx + 2, cy - R, 16, 8, 0.4, 0, 7); g.fill();
+      g.fillStyle = "#d0242c"; g.beginPath(); g.arc(cx - 8, cy - R + 6, 6, 0, 7); g.arc(cx + 4, cy - R + 9, 6, 0, 7); g.fill();
+      g.restore();
+    } });
+  };
+
   /* ---------- matraces: burbujas y brillo de color ---------- */
   FX.flaskGlow = [0, 0, 0, 0];
   FX.flaskCol = ["#7cc4ff", "#ffd36a", "#ff8ab0", "#9cff9a"];
   FX.bubbleFlask = function (i, dur, col) {
-    var f = L.flasks[i], t0 = N.time;
+    var fb = L.flasks[i], t0 = N.time, f = [N.near(fb[0]), fb[1], fb[2]];
     if (col) FX.flaskCol[i] = col;
     N.add({ scene: "lab", z: 3, update: function (dt) {
       var k = (N.time - t0) / dur;
@@ -241,7 +262,7 @@
     } });
   };
   FX.initFlasks = function () {
-    N.add({ scene: "lab", z: 4, draw: function (g) {
+    N.add({ scene: "lab", static: true, z: 4, draw: function (g) {
       for (var i = 0; i < L.flasks.length; i++) {
         var v = FX.flaskGlow[i]; if (v < 0.02) continue;
         var f = L.flasks[i], s = f[2] * 1.6;

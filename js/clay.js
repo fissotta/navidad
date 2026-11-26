@@ -52,7 +52,7 @@
     // luz
     var cx = x + w * (o.lx != null ? o.lx : 0.33), cy = y + h * (o.ly != null ? o.ly : 0.22);
     var gr = g.createRadialGradient(cx, cy, 0, cx, cy, R * 0.95);
-    gr.addColorStop(0, "rgba(255,250,240," + (o.hi != null ? o.hi : 0.34) + ")");
+    gr.addColorStop(0, "rgba(255,252,245," + (o.hi != null ? o.hi * 0.8 : 0.28) + ")");
     gr.addColorStop(0.35, "rgba(255,250,240,0.10)");
     gr.addColorStop(1, "rgba(255,250,240,0)");
     g.fillStyle = gr; g.fillRect(x - w, y - h, w * 3, h * 3);
@@ -65,26 +65,26 @@
     // granito (textura)
     if (!noise) noise = makeNoise();
     var pat = g.createPattern(noise, "repeat");
-    g.globalAlpha = o.grain != null ? o.grain : 0.10;
+    g.globalAlpha = o.grain != null ? o.grain : 0.035;
     g.globalCompositeOperation = "overlay";
     g.save(); var ns = 1.7 / (C._U || 1); g.scale(ns, ns); g.fillStyle = pat;
     g.fillRect((x - w) / ns, (y - h) / ns, w * 3 / ns, h * 3 / ns); g.restore();
     g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
     // huellas (arquitos)
-    var nf = o.prints != null ? o.prints : 1;
+    var nf = o.prints != null ? Math.min(o.prints, 0) : 0;
     for (var f = 0; f < nf; f++) {
       var px = x + w * (0.25 + Math.random() * 0.5), py = y + h * (0.3 + Math.random() * 0.5), pr = R * 0.12;
       g.strokeStyle = "rgba(60,30,10,0.05)"; g.lineWidth = R * 0.006;
       for (var r = 1; r < 5; r++) { g.beginPath(); g.arc(px, py, pr * r * 0.3, -2.4, -0.6); g.stroke(); }
     }
     // borde interior oscuro (volumen)
-    g.lineWidth = Math.min(w, h) * (o.rim != null ? o.rim : 0.14);
-    g.strokeStyle = "rgba(30,14,4,0.20)";
+    g.lineWidth = Math.min(w, h) * (o.rim != null ? o.rim : 0.12) * 0.8;
+    g.strokeStyle = "rgba(60,30,40,0.13)";
     g.beginPath(); path(g); g.stroke();
     g.restore();
     // contorno muy suave
     if (o.edge !== false) {
-      g.save(); g.lineWidth = Math.min(w, h) * 0.02 + 0.001; g.strokeStyle = "rgba(25,12,4,0.25)";
+      g.save(); g.lineWidth = Math.max(Math.min(w, h) * 0.035, 2.2 / (C._U || 1)); g.strokeStyle = "rgba(70,42,48,0.55)";
       g.beginPath(); path(g); g.stroke(); g.restore();
     }
   };

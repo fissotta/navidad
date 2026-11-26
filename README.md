@@ -1,21 +1,26 @@
 # Navidad en el Lab
 
 Fondo de pantalla animado para la pantalla táctil del laboratorio (página estática en GitHub Pages).
-Sobre la foto panorámica real del lab aparecen los integrantes **en plastilina**, bacterias de la clase
-*Acidithiobacillia* (Moya-Beltrán et al. 2021), los **peluches** de la repisa que cobran vida y cantan, y
-easter eggs navideños. Todo con movimientos suaves y música baja, para no distraer.
+El lab está **dibujado** (inspirado en la foto panorámica, sin gente, limpio y liviano: no usa imágenes) y es
+**circular**: la cámara gira lento y continuo, como si estuvieras parado al medio. Una vuelta tarda ~9 minutos.
+Aparecen los integrantes en estilo ilustrado, bacterias de la clase *Acidithiobacillia* (Moya-Beltrán et al. 2021),
+los **peluches** de la repisa que cobran vida y cantan, y easter eggs navideños. Todo suave y con música baja.
 
 ## Cómo se ve
 
-- **Cámara lenta** que recorre el lab en tres zonas (izquierda, centro, derecha) y se queda 1–2 minutos en cada una.
-- **Integrantes** (carpeta `Integrantes`): 14 personas en plastilina con sus rasgos (pelo, barba, lentes, audífonos,
-  ropa). Los de mesón usan **delantal**; los de bioinformática (Abraham, Issotta, Camila) y la PI (Raquel), no.
-  Los de bioinfo aparecen sentados detrás de los monitores.
-- **Peluches**: primer plano de la repisa (fotos `bacterias1/2`), con nombres según sus etiquetas:
-  *A. thiooxidans*, *A. ferrivorans*, *A. caldus*, *A. ferrooxidans*, *A. albertensis*, *A. sulfuriphilus*.
-- **Bacterias del paper** paseando con su nombre en latín (17 especies y candidatas).
-- **Guirnaldas de luces** en las repisas y la ventana, **TV de la pared** (chimenea, globo de nieve, árbol
-  filogenético, aurora, saludo), **matraces** que burbujean, **noche** en la ventana (desde las 19:30).
+- **Secciones del lab** (en círculo): TV, póster del Copahue y puerta con corona → mesón largo con repisas y matraces →
+  refrigerador vidriado, reactivos y percha con delantales → ventanal con palmera y persianas → bioinformática
+  (pizarra con el árbol de los 5 géneros, escritorios con monitores, reloj con la hora real) → repisa con los
+  peluches en sus cajas de colores, póster y mesón 2 → vuelve a la TV.
+- **Decoración**: guirnalda de pino con moños, banderines "FELICES FIESTAS" y "LAB 2026", copos de papel, luces que
+  parpadean suave.
+- **Integrantes** (carpeta `Integrantes`): 14 personas con sus rasgos (pelo, barba, lentes, audífonos, ropa). Los de
+  mesón usan **delantal**; los de bioinformática (Abraham, Issotta, Camila) y la PI (Raquel), no. Los de bioinfo
+  aparecen sentados detrás de los monitores.
+- **Peluches** con sus nombres (etiquetas de cuero): *A. thiooxidans*, *A. ferrivorans*, *A. caldus*,
+  *A. ferrooxidans*, *A. albertensis*, *A. sulfuriphilus*. Cuando les toca, la cámara se acerca a la repisa.
+- **Bacterias del paper** paseando con su nombre en latín. **TV** (chimenea, globo de nieve, árbol filogenético,
+  aurora, saludo), **matraces** que burbujean, **noche** en la ventana (desde las 19:30).
 
 ## Eventos (no se repiten hasta pasar por todos)
 
@@ -30,12 +35,12 @@ easter eggs navideños. Todo con movimientos suaves y música baja, para no dist
 
 ## Al tocar la pantalla
 
-Persona → saluda y dice algo · bacteria/personaje → salta y habla · **repisa de peluches** → primer plano y se
+Persona → saluda y dice algo · bacteria/personaje → salta y habla · **repisa de peluches** → la cámara se acerca y se
 presentan · **TV** → cambia de canal · **ventana** → nieve (y a veces pasa el trineo) · **matraces** → burbujas y
 sale una bacteria · **póster del Copahue** → sale *I. copahuensis* · **póster grande** → datos del paper ·
 **monitor rosado** → mensaje de terminal · **refrigerador** → pingüino · **luces** → cambian de patrón ·
 suelo → chispitas y a veces una bacteria · 7 toques rápidos → un easter egg al azar.
-En el primer plano de los peluches, tocar fuera de ellos vuelve al lab.
+**Reloj** → dice la hora · **puerta** → entra alguien especial · **pizarra** → datos del paper.
 
 ## Música
 
@@ -45,19 +50,18 @@ baja.** La TV solo deja sonar audio después del primer toque. Botón ◀) abajo
 
 ## Rendimiento (TV antigua)
 
-En la TV (Tizen) se dibuja a ~30 cuadros por segundo con el fondo de 1080 px de alto; en un PC 4K usa el fondo de
-2160 px. Los personajes se pintan una sola vez al cargar y luego solo se mueven. Se recarga sola a las 5 AM.
+En la TV (Tizen) se dibuja a ~30 cuadros por segundo. El lab y los personajes se pintan una sola vez al cargar
+(en trozos) y luego solo se mueven; la página pesa ~150 KB. Se recarga sola a las 5 AM.
 
 ## Parámetros de prueba (en la URL)
 
 `?debug` (coordenadas, cps, errores) · `?ev=peluchesCantan` (lanza un evento; ver `EVENTS` en `js/director.js`) ·
-`?zona=left|center|right` · `?noche=1` · `?turbo=5` · `?lento` (modo TV en un PC) · `?bajo` (fondo liviano) ·
+`?x=6000` (posición de la cámara) · `?giro=18` (velocidad de giro, 0 = quieta) · `?noche=1` · `?turbo=5` · `?lento` (modo TV en un PC) · `?bajo` (fondo liviano) ·
 `?vol=0.3` · `?musica=off` · `?galeria` (todos los personajes juntos) · `?sim=10` (adelanta 10 s).
 
 ## Archivos
 
-- `js/scene.js`: coordenadas del lab (pasillos, mesones, escritorios, ventana, TV…). Con `?debug` se ven y al tocar
-  se imprime la coordenada en la consola.
+- `js/labart.js`: el dibujo del lab. `js/scene.js`: coordenadas (pasillos, mesones, escritorios, ventana, TV…) y la
+  cámara circular. Con `?debug` se ven y al tocar se imprime la coordenada en la consola.
 - `js/people.js`: integrantes (colores y rasgos en `N.PEOPLE`). `js/critters.js`: bacterias y personajes navideños.
 - `js/plush.js`: peluches. `js/director.js`: eventos y frases. `js/music.js`: música. `js/fx.js`: efectos.
-- `assets/`: fondo en trozos (`bg/`), muebles recortados que tapan a la gente (`occ/`), peluches (`plush/`).

@@ -1,165 +1,130 @@
-/* Escenarios: la panoramica del lab (9222 x 2160 unidades de mundo = pixeles de la version 4K)
- * y los primeros planos de la repisa de peluches. Aqui estan las coordenadas de todo
- * (pasillos, mesones, escritorios, ventana, TV, matraces...). Con ?debug se dibujan y al
- * tocar se muestra la coordenada, para ajustarlas. */
+/* Escenario: el lab dibujado es una franja circular de 9600 x 2160 unidades (el final empalma con
+ * el principio). La camara gira lento y continuo (?giro=18 unidades/s). Las cosas fijas del lab
+ * (luces, escritorios, peluches, TV...) se repiten cada 9600; la gente y los personajes usan
+ * coordenadas absolutas cerca de la camara. Con ?debug se ven las zonas y al tocar se imprime la
+ * coordenada. */
 (function () {
   "use strict";
-
-  /* ---------- Geometria del laboratorio (coordenadas de mundo) ---------- */
+  var W = 9600;
   N.LAB = {
-    w: 9222, h: 2160,
-    // vistas de camara (x = borde izquierdo de lo que se ve, zoom 1 = alto completo)
-    zones: { left: 0, center: 2700, right: 5382 },
-    // pasillos donde camina la gente: de a hacia b (pies), con los objetos que los tapan en los extremos
-    lanes: {
-      L1: { a: [230, 1590], b: [1000, 1575] },
-      L2: { a: [2860, 1575], b: [3660, 1560] },
-      L3: { a: [5830, 1590], b: [7120, 1575] },
-      L4: { a: [8700, 1670], b: [9330, 1660] }
-    },
-    // lugares para trabajar de pie (frente al meson)
-    stations: {
-      S1: { x: 720, y: 1578, lane: "L1" },
-      S5: { x: 420, y: 1585, lane: "L1" },
-      S2: { x: 3300, y: 1568, lane: "L2" },
-      S6: { x: 3540, y: 1563, lane: "L2" },
-      S3: { x: 6150, y: 1585, lane: "L3" },
-      S7: { x: 6560, y: 1582, lane: "L3" },
-      S4: { x: 8950, y: 1666, lane: "L4" }
-    },
-    // escritorios de bioinformatica (sentados, se ve de los hombros para arriba)
-    desks: {
-      D1: { x: 7690, hip: 1255, hw: 520, clip: 1095 },
-      D2: { x: 7395, hip: 1245, hw: 500, clip: 1088 },
-      D3: { x: 8150, hip: 1305, hw: 540, clip: 1150 }
-    },
-    // zonas tocables [x, y, w, h]
-    spots: {
-      tv: [394, 774, 452, 262],
-      window: [5810, 470, 1680, 730],
-      glass: [5815, 615, 565, 580],
-      blinds: [6390, 470, 1090, 730],
-      shelf: [7690, 460, 545, 190],
-      flasks: [4180, 450, 800, 350],
-      copahue: [164, 780, 172, 224],
-      poster: [8750, 280, 480, 580],
-      monitor: [6640, 960, 270, 170],
-      fridge: [3590, 800, 310, 360]
-    },
-    // guirnaldas de luces: puntos de anclaje y cuanto cuelgan
-    garlands: [
-      { pts: [[1130, 892], [2000, 878], [2690, 852]], sag: 38 },
-      { pts: [[3810, 803], [4700, 803], [5540, 801]], sag: 44 },
-      { pts: [[5720, 470], [6600, 490], [7480, 502]], sag: 46 },
-      { pts: [[7690, 650], [8230, 642], [8690, 624]], sag: 24 }
+    w: W, h: 2160,
+    walkY: [1650, 1770],     // pasillo de atras y de adelante (pies)
+    stations: [               // trabajar de pie frente a un meson
+      { x: 1700, y: 1590 }, { x: 2350, y: 1590 }, { x: 3150, y: 1590 }, { x: 4400, y: 1595 },
+      { x: 5400, y: 1600 }, { x: 9200, y: 1590 }, { x: 650, y: 1610 }
     ],
-    flasks: [[4258, 785, 70], [4508, 790, 88], [4712, 790, 70], [4876, 792, 80]],
+    deskTop: 1225, deskZ: 1630,
+    deskTables: [
+      { x0: 6320, x1: 7120, monitors: [6380, 6735, 7080], screens: ["code", "pink", "tree"] },
+      { x0: 7240, x1: 7680, monitors: [7295, 7630], screens: ["code", "tree"] }
+    ],
+    desksList: [
+      { id: "D1", x: 6545, hip: 1360, hw: 560, clip: 1225, chair: "#2b2d33" },
+      { id: "D2", x: 6915, hip: 1360, hw: 560, clip: 1225, chair: "#3a2f4a" },
+      { id: "D3", x: 7465, hip: 1360, hw: 560, clip: 1225, chair: "#2b2d33" }
+    ],
+    spots: {
+      tv: [370, 750, 500, 300],
+      copahue: [150, 770, 180, 240],
+      door: [1010, 760, 290, 745],
+      flasks: [2060, 560, 700, 200],
+      fridge: [3690, 590, 370, 915],
+      window: [4780, 500, 1340, 840],
+      glass: [4822, 545, 428, 765],
+      blinds: [5262, 545, 816, 765],
+      monitor: [6640, 1020, 190, 150],
+      board: [6400, 620, 900, 380],
+      shelf: [8090, 590, 740, 210],
+      poster: [8920, 500, 420, 560],
+      clock: [7480, 650, 140, 140]
+    },
+    garlands: [
+      { pts: [[1450, 738], [2500, 736], [3550, 738]], sag: 42 },
+      { pts: [[4120, 708], [4660, 708]], sag: 30 },
+      { pts: [[4790, 512], [5450, 512], [6110, 512]], sag: 46 },
+      { pts: [[6400, 612], [7300, 612]], sag: 40 },
+      { pts: [[8090, 800], [8460, 800], [8830, 800]], sag: 20 },
+      { pts: [[9580, 700], [9950, 690], [10330, 700]], sag: 30 }
+    ],
+    flasks: [[2150, 748, 92], [2330, 748, 112], [2515, 748, 92], [2690, 748, 104]],
     floorY: 1500
   };
+  N.LAB.desks = {}; N.LAB.desksList.forEach(function (d) { N.LAB.desks[d.id] = d; });
+  N.ROT = parseFloat(N.Q.get("giro")); if (isNaN(N.ROT)) N.ROT = 18;
 
-  /* ---------- Camara ---------- */
-  var cam = N.cam = { scene: "lab", x: 0, y: 0, z: 1, s: 1, vw: 0, vh: 0, tw: null };
+  /* posicion absoluta de un elemento fijo (base 0..9600) mas cercana a la vista */
+  N.near = function (xb, ref) {
+    ref = ref == null ? N.cam.x + N.cam.vw / 2 : ref;
+    return xb + Math.round((ref - xb) / W) * W;
+  };
+  N.wrapX = function (x) { return ((x % W) + W) % W; };
+
+  /* ---------- camara ---------- */
+  var cam = N.cam = { scene: "lab", x: 0, y: 0, z: 1, s: 1, vw: 0, vh: 0, tw: null, hold: false };
   N.SCENES = {};
-  cam.sceneDef = function () { return N.SCENES[cam.scene]; };
   cam.update = function (dt, CW, CH) {
     var S = N.SCENES[cam.scene];
     if (cam.tw) {
       var t = cam.tw, k = N.ease((N.time - t.t0) / t.d);
       cam.x = N.lerp(t.a.x, t.b.x, k); cam.y = N.lerp(t.a.y, t.b.y, k); cam.z = N.lerp(t.a.z, t.b.z, k);
       if (k >= 1) cam.tw = null;
+    } else if (!cam.hold) {
+      cam.rotV = N.smooth(cam.rotV || 0, N.ROT, 0.4, dt);
+      cam.x += cam.rotV * dt;
     }
     cam.vh = S.h / cam.z; cam.vw = cam.vh * CW / CH;
-    if (cam.vw > S.w) { cam.vw = S.w; cam.vh = S.w * CH / CW; }
-    cam.x = N.clamp(cam.x, 0, Math.max(0, S.w - cam.vw));
     cam.y = N.clamp(cam.y, 0, Math.max(0, S.h - cam.vh));
     cam.s = CH / cam.vh;
   };
   cam.go = function (x, y, z, d) {
     cam.tw = { t0: N.time, d: Math.max(0.01, d || 0), a: { x: cam.x, y: cam.y, z: cam.z }, b: { x: x, y: y, z: z } };
+    cam.rotV = 0;
     return N.wait(d || 0);
   };
-  // centra la camara en un punto del mundo
   cam.look = function (wx, wy, z, d) {
-    var S = N.SCENES[cam.scene], vh = S.h / z, vw = vh * N.CW / N.CH;
-    return cam.go(N.clamp(wx - vw / 2, 0, S.w - vw), N.clamp(wy - vh / 2, 0, S.h - vh), z, d);
+    var vh = N.LAB.h / z, vw = vh * N.CW / N.CH;
+    return cam.go(wx - vw / 2, N.clamp(wy - vh / 2, 0, N.LAB.h - vh), z, d);
   };
-  cam.toZone = function (name, d) { return cam.go(N.LAB.zones[name], 0, 1, d); };
-  cam.zone = function () {   // zona mas cercana a la vista actual
-    var best = "left", bd = 1e9, Z = N.LAB.zones;
-    for (var k in Z) { var dd = Math.abs(Z[k] - (cam.tw ? cam.tw.b.x : cam.x)); if (dd < bd) { bd = dd; best = k; } }
-    return best;
+  cam.view = function () {   // vista final (si hay movimiento, hacia donde va)
+    var x = cam.tw ? cam.tw.b.x : cam.x, z = cam.tw ? cam.tw.b.z : cam.z, vw = N.LAB.h / z * N.CW / N.CH;
+    return { x0: x, x1: x + vw, w: vw };
   };
-  cam.sees = function (x, m) {   // x de mundo visible (con margen m) en la vista final de la camara
-    var x0 = cam.tw ? cam.tw.b.x : cam.x, vw = N.SCENES[cam.scene].h / (cam.tw ? cam.tw.b.z : cam.z) * N.CW / N.CH;
-    m = m || 0;
-    return x > x0 + m && x < x0 + vw - m;
+  cam.sees = function (xb, m) {   // un elemento fijo (base) esta en la vista
+    var v = cam.view(), x = N.near(xb, (v.x0 + v.x1) / 2); m = m || 0;
+    return x > v.x0 + m && x < v.x1 - m;
   };
   cam.toScreen = function (wx, wy) { return [(wx - cam.x) * cam.s, (wy - cam.y) * cam.s]; };
   cam.toWorld = function (sx, sy) { return [sx / cam.s + cam.x, sy / cam.s + cam.y]; };
+  cam.zone = function () { var c = N.wrapX(cam.x + cam.vw / 2); return c < 1400 ? "tv" : c < 3600 ? "mesones" : c < 4700 ? "reactivos" : c < 6200 ? "ventana" : c < 8000 ? "bioinfo" : "peluches"; };
 
-  /* ---------- Fondos ---------- */
+  /* ---------- fondo pintado ---------- */
   function TiledBg(tiles) { this.tiles = tiles; }
-  TiledBg.prototype.draw = function (g) {
-    var x0 = cam.x - 4, x1 = cam.x + cam.vw + 4;
+  TiledBg.prototype.draw = function (g, off) {
+    var x0 = cam.x - off - 4, x1 = cam.x + cam.vw - off + 4;
     for (var i = 0; i < this.tiles.length; i++) {
       var t = this.tiles[i];
-      if (!t.img || t.x + t.w < x0 || t.x > x1) continue;
-      g.drawImage(t.img, t.x - 0.5, 0, t.w + 1, N.LAB.h);   // +1: sin rendijas entre trozos
+      if (t.x + t.w < x0 || t.x > x1) continue;
+      g.drawImage(t.img, t.x - 0.5, 0, t.w + 1, N.LAB.h);
     }
   };
-
   N.loadScenes = function (onProgress) {
-    var hi = !N.LOW && Math.max(N.CW, N.CH * 16 / 9) > 2400 && !N.Q.has("bajo");
-    return N.loadJSON("assets/bg.json?v=" + N.VER).then(function (meta) {
-      var list = meta.tiles[hi ? "hi" : "lo"].map(function (t) { return { src: t.src, x: t.x, w: t.w }; });
-      var jobs = [], done = 0, total = list.length + Object.keys(meta.occ).length + 2;
-      function tick() { done++; if (onProgress) onProgress(done / total); }
-      list.forEach(function (t) { jobs.push(N.loadImg("assets/" + t.src + "?v=" + N.VER).then(function (im) { t.img = im; tick(); })); });
-      N.SCENES.lab = { w: N.LAB.w, h: N.LAB.h, bg: new TiledBg(list) };
-      // oclusores: muebles del primer plano que tapan a la gente que pasa detras
-      Object.keys(meta.occ).forEach(function (k) {
-        var o = meta.occ[k];
-        jobs.push(N.loadImg("assets/occ/" + k + "_" + (hi ? "hi" : "lo") + ".png?v=" + N.VER).then(function (im) {
-          tick();
-          if (!im) return;
-          N.add({ occ: k, z: o.y + o.h, scene: "lab", draw: function (g) { g.drawImage(im, o.x, o.y, o.w, o.h); } });
-        }));
-      });
-      // primeros planos de los peluches (2560 x 1440)
-      ["a", "b"].forEach(function (sc) {
-        var def = N.SCENES["shelf" + sc.toUpperCase()] = { w: 2560, h: 1440, bg: null };
-        jobs.push(N.loadImg("assets/plush/scene_" + sc + "_bg.jpg?v=" + N.VER).then(function (im) {
-          tick(); def.bg = { draw: function (g) { if (im) g.drawImage(im, 0, 0, 2560, 1440); } };
-        }));
-      });
-      return Promise.all(jobs);
+    var k = Math.min(1, N.CH / 2160);
+    return N.buildLabArt(k, onProgress).then(function (tiles) {
+      N.SCENES.lab = { w: W, h: N.LAB.h, bg: new TiledBg(tiles) };
+      N.buildForeground(k * 1.2);
     });
   };
-
-  /* Transicion suave entre escenarios (fundido) */
   N.fade = 0;
-  N.goScene = function (name, setup, dur) {
-    dur = dur || 0.9;
-    var t0 = N.time;
-    return new Promise(function (res) {
-      var a = N.add({ scene: "*", layer: "none", update: function () {
-        var k = (N.time - t0) / dur;
-        if (k < 1) N.fade = N.ease(k);
-        else if (!a.sw) { a.sw = true; cam.scene = name; cam.tw = null; if (setup) setup(); N.fade = 1; a.t1 = N.time; }
-        else { var k2 = (N.time - a.t1) / dur; N.fade = 1 - N.ease(k2); if (k2 >= 1) { N.fade = 0; a.dead = true; res(); } }
-      } });
-    });
-  };
 
-  /* ---------- Depuracion ---------- */
+  /* ---------- depuracion ---------- */
   N.debugDraw = function (g) {
-    if (!N.DEBUG || cam.scene !== "lab") return;
+    if (!N.DEBUG) return;
     var L = N.LAB, s = 1 / cam.s;
     g.save(); g.lineWidth = 3 * s; g.font = (16 * s) + "px sans-serif";
-    for (var k in L.lanes) { var l = L.lanes[k]; g.strokeStyle = "#0f0"; g.beginPath(); g.moveTo(l.a[0], l.a[1]); g.lineTo(l.b[0], l.b[1]); g.stroke(); g.fillStyle = "#0f0"; g.fillText(k, l.a[0], l.a[1] - 10 * s); }
-    for (k in L.stations) { var st = L.stations[k]; g.fillStyle = "#ff0"; g.fillRect(st.x - 8 * s, st.y - 8 * s, 16 * s, 16 * s); g.fillText(k, st.x + 10 * s, st.y); }
-    for (k in L.desks) { var d = L.desks[k]; g.strokeStyle = "#0ff"; g.beginPath(); g.moveTo(d.x - 120, d.clip); g.lineTo(d.x + 120, d.clip); g.stroke(); g.fillStyle = "#0ff"; g.fillText(k, d.x, d.clip - 10 * s); }
-    for (k in L.spots) { var r = L.spots[k]; g.strokeStyle = "#f0f"; g.strokeRect(r[0], r[1], r[2], r[3]); g.fillStyle = "#f0f"; g.fillText(k, r[0] + 4 * s, r[1] + 18 * s); }
+    L.walkY.forEach(function (y) { g.strokeStyle = "#0f0"; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); });
+    L.stations.forEach(function (st, i) { g.fillStyle = "#ff0"; g.fillRect(st.x - 8 * s, st.y - 8 * s, 16 * s, 16 * s); g.fillText("S" + i, st.x + 10 * s, st.y); });
+    L.desksList.forEach(function (d) { g.strokeStyle = "#0ff"; g.beginPath(); g.moveTo(d.x - 120, d.clip); g.lineTo(d.x + 120, d.clip); g.stroke(); g.fillStyle = "#0ff"; g.fillText(d.id, d.x, d.clip - 10 * s); });
+    for (var k in L.spots) { var r = L.spots[k]; g.strokeStyle = "#f0f"; g.strokeRect(r[0], r[1], r[2], r[3]); g.fillStyle = "#f0f"; g.fillText(k, r[0] + 4 * s, r[1] + 18 * s); }
     g.restore();
   };
 })();

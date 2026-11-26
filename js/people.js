@@ -416,12 +416,12 @@
     g.save(); g.translate(0, hipY); g.rotate(lean);
     var arm = this.coat ? S.armCoat : S.arm;
     var headX = 0, headY = -0.33 * H;
-    C.draw(g, S.hairBack, headX, headY, this.tilt, H);
+    g.save(); g.translate(headX, headY); g.rotate(this.tilt); g.scale(1.1, 1.1); C.draw(g, S.hairBack, 0, 0, 0, H); g.restore();
     C.draw(g, arm, -0.135 * H, -0.3 * H, this.armL, H);   // brazo de atras
     C.draw(g, this.coat ? S.torsoCoat : S.torso, 0, 0, 0, H);
     if (this.scarf) C.draw(g, ACC.scarf, 0, 0, 0, H);
     // cabeza
-    g.save(); g.translate(headX, headY); g.rotate(this.tilt);
+    g.save(); g.translate(headX, headY); g.rotate(this.tilt); g.scale(1.1, 1.1);
     C.draw(g, S.head, 0, 0, 0, H);
     this.drawFace(g, H);
     C.draw(g, S.headTop, 0, 0, 0, H);
@@ -445,11 +445,10 @@
     for (var s = -1; s <= 1; s += 2) {
       var x = s * ex + sh;
       if (closed) {
-        g.strokeStyle = "#2a1a12"; g.lineWidth = 0.009 * H; g.beginPath(); g.arc(x, ey, 0.025 * H, 0.2, Math.PI - 0.2); g.stroke();
+        g.strokeStyle = "#2a1c1a"; g.lineWidth = 0.008 * H; g.beginPath(); g.arc(x, ey - 0.004 * H, 0.016 * H, 0.25, Math.PI - 0.25); g.stroke();
       } else {
-        g.fillStyle = "#fbf8f2"; g.beginPath(); g.ellipse(x, ey, 0.03 * H, 0.036 * H, 0, 0, 6.3); g.fill();
-        g.fillStyle = "#1e1410"; g.beginPath(); g.arc(x + look, ey + 0.006 * H, 0.016 * H, 0, 6.3); g.fill();
-        g.fillStyle = "rgba(255,255,255,0.9)"; g.beginPath(); g.arc(x + look + 0.005 * H, ey, 0.005 * H, 0, 6.3); g.fill();
+        g.fillStyle = "#2a1c1a"; g.beginPath(); g.ellipse(x + look * 0.5, ey + 0.004 * H, 0.017 * H, 0.023 * H, 0, 0, 6.3); g.fill();
+        g.fillStyle = "rgba(255,255,255,0.95)"; g.beginPath(); g.arc(x + look * 0.5 + 0.006 * H, ey - 0.004 * H, 0.006 * H, 0, 6.3); g.fill();
       }
     }
   };
