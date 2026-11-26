@@ -1,7 +1,7 @@
 /* Arranque: lienzo, bucle de dibujo (30 cps en la TV), toques y boton de sonido. */
 (function () {
   "use strict";
-  N.VER = "6";
+  N.VER = "7";
   var cv = document.getElementById("c"), g = cv.getContext("2d", { alpha: false });
   var cam = N.cam;
 
@@ -24,11 +24,19 @@
     N.buildCritters(Math.round(260 * s0 * 1.6), Math.round(900 * s0 * 1.1));
     await N.loadScenes(prog);
     N.buildPlush(Math.min(1, N.CH / 2160) * 3.4);
+    N.touch.init(Math.min(1, N.CH / 2160));
     N.fx.initLights(); N.fx.initWindow(); N.fx.initTV(); N.fx.initFlasks(); N.fx.initClock();
     N.director.start();
-    loadEl.style.opacity = 0; setTimeout(function () { loadEl.style.display = "none"; }, 1200);
+    // la TV necesita unos segundos para "calentar" (subir las imagenes a la tarjeta grafica): se dibuja detras de la pantalla de carga
+    setTimeout(function () { loadEl.style.opacity = 0; setTimeout(function () { loadEl.style.display = "none"; }, 1200); }, N.LOW ? 3500 : 800);
     var sim = parseFloat(N.Q.get("sim"));
-    if (sim) { await N.sim(sim); N.ROT = 0; N.TURBO = 0.0001; }
+    if (sim) {
+      N.ROT = parseFloat(N.Q.get("giro")) || 0;
+      await N.sim(sim);
+      var taps = N.Q.get("tap");   // prueba: ?tap=x,y;x,y (coordenadas del mundo) y luego 2 s mas
+      if (taps) { taps.split(";").forEach(function (p) { var q = p.split(","); N.director.tap(parseFloat(q[0]), parseFloat(q[1])); }); await N.sim(parseFloat(N.Q.get("tras")) || 2); }
+      N.ROT = 0; N.TURBO = 0.0001;
+    }
     last = performance.now(); requestAnimationFrame(frame);
     if (N.music.on) { N.music.init(); }
   }

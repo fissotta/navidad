@@ -487,13 +487,13 @@
         return;
       }
     }
+    if (N.touch.tap(wx, wy)) return;
     var xb = N.wrapX(wx), S = L.spots;
     if (inR(S.shelf, xb, wy)) { if (!N.plush.busy && cooled("shelf", 25)) D.run("peluchesSaludan"); return; }
     if (inR(S.tv, xb, wy)) { FX.tvNext(); N.music.sfx("pop"); return; }
     if (inR(S.copahue, xb, wy)) { if (cooled("copahue", 8)) copahuePop(); return; }
     if (inR(S.poster, xb, wy)) { FX.sparkles(wx, wy, 10, 80); say(wx, wy, N.pick(posterMsgs), 4); return; }
     if (inR(S.board, xb, wy)) { say(wx, wy, N.pick(["5 géneros en la clase Acidithiobacillia", "Moya-Beltrán et al. 2021", "Este árbol lo dibujó bioinfo"]), 3.5); return; }
-    if (inR(S.clock, xb, wy)) { var d = new Date(); say(wx, wy, "Son las " + d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2) + (d.getHours() >= 18 ? ". ¡A casa!" : ". ¡A seguir!"), 3); return; }
     if (inR(S.flasks, xb, wy)) {
       var best = 0, bd = 1e9; L.flasks.forEach(function (f, k) { var dd = Math.abs(f[0] - xb); if (dd < bd) { bd = dd; best = k; } });
       FX.bubbleFlask(best, 6); N.music.sfx("pop");
@@ -501,19 +501,7 @@
       return;
     }
     if (inR(S.monitor, xb, wy)) { say(wx, wy, N.pick(["$ sbatch navidad.sh", "Job 24601: PENDING (Resources)", "BLAST: 0 hits", "100% genomas ensamblados", "$ git commit -m \"feliz navidad\""]), 3.5); return; }
-    if (inR(S.window, xb, wy)) { FX.outsideSnow = 1; setTimeout(function () { FX.outsideSnow = 0; }, 15000); if (cooled("sleigh", 60)) D.run("trineoVentana"); return; }
-    if (inR(S.fridge, xb, wy) && cooled("fridge", 30)) { D.run("pinguino"); return; }
-    if (inR(S.door, xb, wy) && cooled("door", 30)) { D.run(N.pick(["pascuero", "reno", "monito"])); return; }
-    for (var gI = 0; gI < L.garlands.length; gI++) {
-      var pts = L.garlands[gI].pts;
-      if (xb > pts[0][0] && xb < pts[pts.length - 1][0] && Math.abs(wy - pts[0][1]) < 90) { FX.nextLights(); N.music.sfx("sparkle"); return; }
-    }
-    FX.sparkles(wx, wy, 6, 40); N.music.sfx("sparkle");
-    if (wy > L.floorY && cooled("floorB", 6) && N.chance(0.5)) {
-      var y = N.clamp(wy, 1650, 1900), bb = N.spawnBact(N.pick(N.SPECIES), wx, y, { len: N.rnd(110, 150), fadeIn: true, label: 99, hat: N.chance(0.5) ? "santa" : null });
-      bb.jumpT = 0.6;
-      bb.say(N.pick(bb.sp.lines), 2.8).then(function () { return bb.walkTo(wx + N.rnd(-400, 400), y, 0.7); }).then(function () { bb.leave(); });
-    }
+    // el suelo y las paredes vacias no hacen nada
   };
   function say(x, y, txt, d) { N.bubble({ headPos: function () { return [x, y]; }, scene: "lab" }, txt, d); }
   function tapPerson(p) {

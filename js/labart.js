@@ -65,6 +65,15 @@
       x += w + 8 + r() * 26;
     }
   }
+  N.benchDrawers = function (x0, x1, top) {   // rectangulos de los cajones (los usa tambien touch.js)
+    var out = [], n = Math.max(2, Math.round((x1 - x0) / 330));
+    for (var i = 0; i < n; i++) {
+      var cx = x0 + (i + 0.5) * (x1 - x0) / n, cw = (x1 - x0) / n - 40;
+      if (i % 3 === 1) continue;
+      for (var d = 0; d < 3; d++) out.push([cx - cw / 2, top + 44 + d * (FLOOR - top - 60) / 3, cw, (FLOOR - top - 60) / 3 - 10]);
+    }
+    return out;
+  };
   function bench(g, x0, x1, top) {   // meson blanco con cajoneras
     g.fillStyle = "rgba(60,40,30,0.10)"; g.fillRect(x0 + 10, FLOOR - 6, x1 - x0, 30);
     box(g, x0, top + 24, x1 - x0, FLOOR - top - 24, "#f3f1ec", { r: 4, grad: ["#f6f4ef", "#e6e2da"] });
@@ -127,22 +136,6 @@
 
 
     /* decoracion navidena: guirnalda de pino, banderines y copos de papel */
-    item(-50, W + 50, function (g, x0, x1) {
-      var hooks = 700;
-      for (var hx = Math.floor(x0 / hooks) * hooks; hx < x1 + hooks; hx += hooks) {
-        for (var t = 0; t <= 1.0001; t += 0.05) {
-          var x = hx + t * hooks, y = 430 + Math.sin(Math.PI * t) * 55;
-          g.fillStyle = (Math.round(t * 20) % 2) ? "#3f8a4a" : "#4f9d58";
-          g.beginPath(); g.ellipse(x, y, 30, 17, (t - 0.5) * 0.6, 0, 7); g.fill();
-          g.fillStyle = "#357a40"; g.beginPath(); g.ellipse(x + 10, y + 6, 18, 10, 0.4, 0, 7); g.fill();
-        }
-        // mono rojo en cada gancho
-        g.fillStyle = "#c8262e"; g.beginPath(); g.ellipse(hx - 22, 428, 22, 13, -0.4, 0, 7); g.ellipse(hx + 22, 428, 22, 13, 0.4, 0, 7); g.fill();
-        g.beginPath(); g.moveTo(hx - 6, 432); g.lineTo(hx - 20, 470); g.lineTo(hx - 8, 466); g.closePath(); g.moveTo(hx + 6, 432); g.lineTo(hx + 20, 470); g.lineTo(hx + 8, 466); g.closePath(); g.fill();
-        g.fillStyle = "#a81e26"; g.beginPath(); g.arc(hx, 430, 10, 0, 7); g.fill();
-        g.fillStyle = "#f2c94c"; g.beginPath(); g.arc(hx + 350, 482, 9, 0, 7); g.fill();
-      }
-    });
     function bunting(x0, x1, y, text) {
       item(x0 - 20, x1 + 20, function (g) {
         var n = text.length, w = (x1 - x0) / n, cols = ["#c8262e", "#3f8a4a", "#e0a82e"];
@@ -201,13 +194,10 @@
       g.strokeStyle = "rgba(255,255,255,0.25)"; g.lineWidth = 6; for (var x = 290; x < 960; x += 40) line(g, x, 1530, x, 1610, "rgba(255,255,255,0.2)", 6);
       // puerta con corona navidena
       box(g, 1010, 760, 290, 745, "#e9e5de", { r: 4 });
-      box(g, 1030, 780, 250, 725, "#c99460", { r: 4, grad: ["#d4a06c", "#b98450"] });
-      box(g, 1100, 830, 110, 140, "#cfe6f2", { r: 6 });
-      circle(g, 1250, 1160, 13, "#d8c070", OUT);
-      g.save(); g.lineWidth = 24; g.strokeStyle = "#3f8a4a"; g.beginPath(); g.arc(1155, 1070, 62, 0, 7); g.stroke(); g.restore();
-      for (var a = 0; a < 10; a++) circle(g, 1155 + Math.cos(a * 0.63) * 62, 1070 + Math.sin(a * 0.63) * 62, 8, a % 2 ? "#d0242c" : "#f2c94c");
-      C.ellShape(g, 1135, 1135, 22, 14, "#d0242c", { prints: 0 }); C.ellShape(g, 1175, 1135, 22, 14, "#d0242c", { prints: 0 });
-      box(g, 1105, 990, 100, 40, "#fbfaf6", { r: 4, lw: 2 }); g.fillStyle = "#3a3a3a"; g.font = "bold 22px sans-serif"; g.textAlign = "center"; g.fillText("LAB", 1155, 1018);
+      var hg = g.createLinearGradient(0, 780, 0, 1505); hg.addColorStop(0, "#5a5f6a"); hg.addColorStop(1, "#3a3d44");
+      g.fillStyle = hg; g.fillRect(1030, 780, 250, 725);
+      g.fillStyle = "#6f747e"; g.beginPath(); g.moveTo(1030, 1505); g.lineTo(1280, 1505); g.lineTo(1230, 1380); g.lineTo(1080, 1380); g.closePath(); g.fill();
+      g.fillStyle = "rgba(255,240,200,0.35)"; g.fillRect(1110, 800, 90, 30);
     });
 
     /* B: meson largo con repisas y matraces grandes (1400 - 3600) */
@@ -276,12 +266,6 @@
       // marcos
       [4810, 5250, 5670, 6090].forEach(function (x) { box(g, x - 12, 530, 24, 790, "#f4f2ee", { r: 3, lw: 2 }); });
       box(g, 4800, 520, 1310, 24, "#f4f2ee", { r: 3, lw: 2 });
-      // persianas a medio bajar en los dos paneles de la derecha
-      [[5262, 5658, 1150], [5682, 6078, 980]].forEach(function (p) {
-        g.fillStyle = "rgba(245,236,205,0.88)"; g.fillRect(p[0], 545, p[1] - p[0], p[2] - 545);
-        for (var yy = 575; yy < p[2]; yy += 34) line(g, p[0], yy, p[1], yy, "rgba(180,165,130,0.35)", 3);
-        box(g, p[0], p[2] - 14, p[1] - p[0], 16, "#e8dcb8", { r: 3, lw: 2 });
-      });
       // alfeizar y mueble bajo
       box(g, 4770, 1310, 1360, 34, "#fbfaf6", { r: 5 });
       box(g, 4800, 1344, 1300, 160, "#f0eee9", { r: 4, grad: ["#f4f2ee", "#e2ded6"] });
@@ -392,12 +376,32 @@
       // adornos navidenos en la planta
       [[120, 280, "#d0242c"], [230, 240, "#f2c94c"], [180, 180, "#3a6fc2"], [140, 340, "#f2c94c"], [250, 330, "#d0242c"]].forEach(function (p) { C.ellShape(g, p[0], p[1], 16, 16, p[2], { prints: 0, hi: 0.6 }); });
     });
-    [{ c: chair("#b8323a", "#a52a32"), x: 2350, y: 1620, w: 340, h: 520, z: 2140 },
-      { c: chair("#2b2d33"), x: 5480, y: 1600, w: 340, h: 520, z: 2120 },
-      { c: chair("#33353c", "#3a3c44"), x: 7020, y: 1660, w: 380, h: 580, z: 2240 },
-      { c: plant, x: 4360, y: 1400, w: 760, h: 640, z: 2040 }].forEach(function (o) { list.push(o); });
+    [{ c: chair("#b8323a", "#a52a32"), x: 2350, y: 1620, w: 340, h: 520, z: 2140, kind: "chair" },
+      { c: chair("#2b2d33"), x: 5480, y: 1600, w: 340, h: 520, z: 2120, kind: "chair" },
+      { c: chair("#33353c", "#3a3c44"), x: 7020, y: 1660, w: 380, h: 580, z: 2240, kind: "chair" },
+      { c: plant, x: 4360, y: 1400, w: 760, h: 640, z: 2040, kind: "plant" }].forEach(function (o) { list.push(o); });
+    N.FG = [];
     list.forEach(function (o) {
-      N.add({ scene: "lab", static: true, z: o.z, fg: true, draw: function (g) { g.drawImage(o.c, o.x, o.y, o.w, o.h); } });
+      var a = { scene: "lab", static: true, z: o.z, fg: true, o: o, kind: o.kind, spin: 0, roll: 0, rollV: 0, shake: 0,
+        update: function (dt) {
+          if (this.spin > 0) this.spin = Math.max(0, this.spin - dt);
+          this.roll += this.rollV * dt; this.rollV *= Math.pow(0.25, dt); this.roll *= Math.pow(0.6, dt);
+          if (this.shake > 0) this.shake = Math.max(0, this.shake - dt);
+        },
+        draw: function (g) {
+          var o = this.o;
+          if (!this.kind) { g.drawImage(o.c, o.x, o.y, o.w, o.h); return; }
+          var cx = o.x + o.w / 2 + this.roll, by = o.y + o.h;
+          g.save(); g.translate(cx, by);
+          if (this.spin > 0) { var ph = (1.6 - this.spin) * 9; g.scale(Math.cos(ph) * 0.9 + (Math.cos(ph) >= 0 ? 0.1 : -0.1), 1); }
+          if (this.shake > 0) g.rotate(Math.sin(this.shake * 30) * 0.05 * this.shake);
+          g.drawImage(o.c, -o.w / 2, -o.h, o.w, o.h);
+          g.restore();
+        },
+        hit: function (wx, wy) { var x = N.wrapX(wx) - this.roll, o = this.o; return x > o.x + o.w * 0.15 && x < o.x + o.w * 0.85 && wy > o.y && wy < o.y + o.h; }
+      };
+      if (o.kind) N.FG.push(a);
+      N.add(a);
     });
   };
 

@@ -74,7 +74,7 @@
       snowAcc--;
       P({ type: "snow", x: N.cam.x + N.rnd(0, N.cam.vw), y: N.cam.y - 20, vx: N.rnd(-10, 10), vy: N.rnd(45, 90), s: N.rnd(3, 8), ph: N.rnd(0, 6), life: N.cam.vh / 60, a: N.rnd(0.5, 0.9), fin: 1, top: true });
     }
-    var g0 = L.spots.glass, gx = N.near(g0[0]), gl = [gx, g0[1], g0[2], g0[3]];
+    var g0 = L.spots.glass, gx = N.near(g0[0]), top = N.touch ? Math.max(g0[1], N.touch.blindTop(0)) : g0[1], gl = [gx, top, g0[2], g0[1] + g0[3] - top];
     outAcc += dt * FX.outsideSnow * 25;
     while (outAcc > 1) {
       outAcc--;
@@ -109,14 +109,18 @@
     }
     return { wire: wire, bulbs: bulbs };
   }
+  FX.garlandActors = [];
   FX.initLights = function () {
     L.garlands.forEach(function (def) {
       var gl = buildGarland(def);
-      N.add({ scene: "lab", static: true, z: def.pts[0][1], kind: "garland", gl: gl, draw: function (g) {
-        var W = this.gl.wire, B = this.gl.bulbs, lt = FX.lights, t = N.time;
+      var ga = N.add({ scene: "lab", static: true, z: def.pts[0][1], kind: "garland", gl: gl, def: def, sw: 0,
+        update: function (dt) { this.sw *= Math.pow(0.3, dt); },
+        draw: function (g) {
+        var W = this.gl.wire, B = this.gl.bulbs, lt = FX.lights, t = N.time, sw = this.sw, n0 = W.length;
+        var off = function (x, k) { return sw > 0.01 ? sw * 16 * Math.sin(t * 7 - k * 0.5) * Math.sin(Math.PI * N.clamp((x - W[0][0]) / (W[n0 - 1][0] - W[0][0]), 0, 1)) : 0; };
         g.save();
         g.strokeStyle = "rgba(40,60,40,0.75)"; g.lineWidth = 2.2; g.beginPath();
-        g.moveTo(W[0][0], W[0][1]); for (var i = 1; i < W.length; i++) g.lineTo(W[i][0], W[i][1]); g.stroke();
+        g.moveTo(W[0][0], W[0][1]); for (var i = 1; i < W.length; i++) g.lineTo(W[i][0], W[i][1] + off(W[i][0], i)); g.stroke();
         var night = N.night || 0;
         for (i = 0; i < B.length; i++) {
           var b = B[i], col = lt.pal[i % lt.pal.length], v;
@@ -128,7 +132,8 @@
             default: v = 0.9;
           }
           v *= lt.on * lt.level;
-          g.fillStyle = col; g.beginPath(); g.ellipse(b.x, b.y, 5, 8, 0, 0, 7); g.fill();
+          b.dy = off(b.x, i * 1.1);
+          g.fillStyle = col; g.beginPath(); g.ellipse(b.x, b.y + b.dy, 5, 8, 0, 0, 7); g.fill();
           b.v = v; b.col = col;
         }
         // brillos en una sola pasada (cambiar el modo de mezcla por cada ampolleta es caro en la TV)
@@ -136,11 +141,12 @@
         var s = (N.LOW ? 26 : 34) + night * 18, minV = N.LOW ? 0.3 : 0.05;
         for (i = 0; i < B.length; i++) {
           b = B[i]; if (b.v <= minV) continue;
-          g.globalAlpha = b.v * (0.55 + night * 0.45); g.drawImage(C.glow(b.col), b.x - s, b.y - s, s * 2, s * 2);
+          g.globalAlpha = b.v * (0.55 + night * 0.45); g.drawImage(C.glow(b.col), b.x - s, b.y + b.dy - s, s * 2, s * 2);
         }
         g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
         g.restore();
       } });
+      FX.garlandActors.push(ga);
     });
   };
 
@@ -235,7 +241,7 @@
   FX.initClock = function () {
     var r = L.spots.clock, cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2, R = r[2] / 2;
     N.add({ scene: "lab", static: true, z: 3, draw: function (g) {
-      var d = new Date(), h = d.getHours() % 12 + d.getMinutes() / 60, m = d.getMinutes() + d.getSeconds() / 60;
+      var d = new Date(), ex = N.touch ? N.touch.clockExtra() : 0, h = d.getHours() % 12 + (d.getMinutes() + ex) / 60, m = d.getMinutes() + d.getSeconds() / 60 + ex;
       g.save();
       g.fillStyle = "rgba(60,40,30,0.1)"; g.beginPath(); g.arc(cx + 6, cy + 8, R, 0, 7); g.fill();
       g.fillStyle = "#fbfaf6"; g.strokeStyle = "#c8262e"; g.lineWidth = 10; g.beginPath(); g.arc(cx, cy, R - 5, 0, 7); g.fill(); g.stroke();

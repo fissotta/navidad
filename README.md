@@ -33,14 +33,23 @@ los **peluches** de la repisa que cobran vida y cantan, y easter eggs navideños
   galleta de jengibre que escapa, gruñón verde que roba las luces (y las devuelve), duende ordenando reactivos,
   cascanueces, monito (de la página *monito*), pingüino, mono de nieve que se derrite, bacteria gigante.
 
-## Al tocar la pantalla
+## Al tocar la pantalla (casi todo reacciona)
 
-Persona → saluda y dice algo · bacteria/personaje → salta y habla · **repisa de peluches** → la cámara se acerca y se
-presentan · **TV** → cambia de canal · **ventana** → nieve (y a veces pasa el trineo) · **matraces** → burbujas y
-sale una bacteria · **póster del Copahue** → sale *I. copahuensis* · **póster grande** → datos del paper ·
-**monitor rosado** → mensaje de terminal · **refrigerador** → pingüino · **luces** → cambian de patrón ·
-suelo → chispitas y a veces una bacteria · 7 toques rápidos → un easter egg al azar.
-**Reloj** → dice la hora · **puerta** → entra alguien especial · **pizarra** → datos del paper.
+- **Cajones** de los mesones: se abren y muestran qué hay (parafilm, tubos Falcon, cubetas, puntas, guantes,
+  eppendorfs, placas Petri, un calcetín, el control de la tele, un regalo escondido, "¿quién dejó esta galleta de
+  Navidad aquí?" —a veces la galleta se escapa corriendo— o una bacteria durmiendo que se despierta).
+- **Puerta**: se abre y entra alguien del lab, un personaje navideño, una bacteria… o nadie (misterio: viento,
+  cascabeles, "jo… jo… jo…").
+- **Persianas**: suben y bajan (a veces nieva afuera o pasa el trineo). **Refrigerador**: se abre con luz fría y
+  neblina (a veces sale un pingüino).
+- **Guirnalda de pino** y **luces de colores**: se mecen (las luces además cambian de patrón). **Luces del techo**:
+  parpadean. **Copos de papel**: sueltan nieve. **Banderines**: confeti.
+- **Sillas**: giran y ruedan (a veces se cae una bacteria). **Planta**: se sacude y tintinean las esferas.
+- **Equipos**: pHmetro, pipetas, gradilla, puntas, centrífuga y vórtex (giran), termociclador, incubadora (brilla),
+  borrador de tesis. **Repisas**: nombres de reactivos. **Percha**: delantales con historia (y una bacteria en un
+  bolsillo). **Cubículos**, **reloj** (gira loco y dice la hora), **TV** (canal), **pósters**, **pizarra**, **monitor**.
+- **Personas** saludan y dicen algo, **bacterias** y **personajes** saltan y hablan, **peluches** se presentan.
+- El **suelo** no hace nada. 7 toques rápidos → un easter egg al azar.
 
 ## Música
 
