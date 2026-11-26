@@ -12,9 +12,9 @@ los **peluches** de la repisa que cobran vida y cantan, y easter eggs navideños
   refrigerador vidriado, reactivos y percha con delantales → ventanal con palmera y persianas → bioinformática
   (pizarra con el árbol de los 5 géneros, escritorios con monitores, reloj con la hora real) → repisa con los
   peluches en sus cajas de colores, póster y mesón 2 → vuelve a la TV.
-- **Decoración**: guirnalda de pino con moños, banderines "FELICES FIESTAS" y "LAB 2026", copos de papel, luces que
+- **Decoración**: guirnalda de pino con moños, banderines "FELIZ NAVIDAD" y "LAB 2026", copos de papel, luces que
   parpadean suave.
-- **Integrantes** (carpeta `Integrantes`): 14 personas con sus rasgos (pelo, barba, lentes, audífonos, ropa). Los de
+- **Integrantes** (carpeta `Integrantes`): 14 personas con sus rasgos (pelo, barba, lentes, audífonos, ropa) y una **tarjeta de identificación** colgada con su nombre. Los de
   mesón usan **delantal**; los de bioinformática (Abraham, Issotta, Camila) y la PI (Raquel), no. Los de bioinfo
   aparecen sentados detrás de los monitores.
 - **Peluches** con sus nombres (etiquetas de cuero): *A. thiooxidans*, *A. ferrivorans*, *A. caldus*,

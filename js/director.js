@@ -453,7 +453,7 @@
         N.spawnChar(k, bx + i * 400, 1650, { h: N.depthH(1650) * hk });
       });
       N.SPECIES.slice(0, 9).forEach(function (sp, i) { N.spawnBact(sp, bx + 50 + i * 400, 1950, { len: 150, label: 99, hat: i % 3 ? "santa" : null }); });
-      N.PEOPLE.forEach(function (d, i) { N.spawnPerson(d, bx + 4000 + i * 420, 1780, { acc: i % 3 ? null : N.ACC_LIST[i % 5] }); });
+      N.PEOPLE.forEach(function (d, i) { N.spawnPerson(d, bx + (N.Q.has("gente") ? -100 + i * 280 : 4000 + i * 420), N.Q.has("gente") ? 1900 : 1780, { acc: i % 3 ? null : N.ACC_LIST[i % 5] }); });
       return;
     }
     for (var i = 0; i < 2; i++) deskSession();

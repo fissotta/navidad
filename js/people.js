@@ -151,6 +151,22 @@
       g.restore();
     }
   }
+  /* tarjeta de identificacion colgada al cuello, con el nombre */
+  function badge(g, d) {
+    var cx = 0, cy = -0.165, w = 0.12, h = 0.074, col = d.role === "pi" ? "#c8262e" : d.role === "bio" ? "#2f6fb8" : "#2f8a4a";
+    g.save();
+    g.strokeStyle = col; g.lineWidth = 0.008;
+    g.beginPath(); g.moveTo(-0.045, -0.335); g.lineTo(cx - 0.012, cy - h / 2); g.moveTo(0.045, -0.335); g.lineTo(cx + 0.012, cy - h / 2); g.stroke();
+    g.fillStyle = "rgba(60,40,40,0.18)"; g.beginPath(); C.rrect(cx - w / 2 + 0.004, cy - h / 2 + 0.005, w, h, 0.01)(g); g.fill();
+    g.fillStyle = "#fffdf8"; g.strokeStyle = "rgba(70,50,50,0.5)"; g.lineWidth = 0.003;
+    g.beginPath(); C.rrect(cx - w / 2, cy - h / 2, w, h, 0.01)(g); g.fill(); g.stroke();
+    g.fillStyle = col; g.fillRect(cx - w / 2 + 0.003, cy - h / 2 + 0.003, w - 0.006, 0.016);
+    g.fillStyle = "#c9c2b8"; g.fillRect(cx - 0.012, cy - h / 2 - 0.004, 0.024, 0.008);
+    var fs = 0.024; g.font = "bold " + fs + "px 'Trebuchet MS', sans-serif";
+    var tw = g.measureText(d.name).width; if (tw > w * 0.88) { fs *= w * 0.88 / tw; g.font = "bold " + fs + "px 'Trebuchet MS', sans-serif"; }
+    g.fillStyle = "#2a2020"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(d.name, cx, cy + 0.011);
+    g.restore();
+  }
   function arm(g, sleeve, skin) {
     C.rrShape(g, -0.036, -0.03, 0.072, 0.27, 0.035, sleeve, { hi: 0.25, prints: 0 });
     C.ellShape(g, 0, 0.27, 0.042, 0.045, skin, { prints: 0, hi: 0.4 });
@@ -308,8 +324,8 @@
         hairBack: C.part(-0.26, -0.4, 0.26, 0.18, U, function (g) { hairBack(g, d); }),
         head: C.part(-0.2, -0.36, 0.2, 0.04, U, function (g) { head(g, d); }),
         headTop: C.part(-0.22, -0.42, 0.22, 0.08, U, function (g) { beard(g, d); hairFront(g, d); glasses(g, d); extras(g, d); }),
-        torso: C.part(-0.2, -0.4, 0.2, 0.06, U, function (g) { torso(g, d, false); }),
-        torsoCoat: C.part(-0.2, -0.4, 0.2, 0.2, U, function (g) { torso(g, d, true); }),
+        torso: C.part(-0.2, -0.4, 0.2, 0.06, U, function (g) { torso(g, d, false); badge(g, d); }),
+        torsoCoat: C.part(-0.2, -0.4, 0.2, 0.2, U, function (g) { torso(g, d, true); badge(g, d); }),
         arm: C.part(-0.06, -0.05, 0.06, 0.33, U, function (g) { arm(g, sl, d.skin); }),
         armCoat: C.part(-0.06, -0.05, 0.06, 0.33, U, function (g) { arm(g, "#f2f0ec", d.skin); }),
         leg: C.part(-0.06, -0.05, 0.1, 0.42, U, function (g) { leg(g, d.pants, shoe); })

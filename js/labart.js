@@ -157,7 +157,7 @@
         }
       });
     }
-    bunting(1650, 3350, 520, "FELICES FIESTAS");
+    bunting(1750, 3250, 520, "FELIZ NAVIDAD");
     bunting(6500, 7250, 520, "LAB 2026");
     function flakes(x0, x1, n, seed) {
       item(x0 - 60, x1 + 60, function (g) {
@@ -374,7 +374,8 @@
         [[-120, 40], [120, 40], [-60, 60], [60, 60]].forEach(function (p) { line(g, 170, 440, 170 + p[0], 440 + p[1] * 0.6, "#3a3a40", 14); circle(g, 170 + p[0], 450 + p[1] * 0.6 + 10, 14, "#2a2a2e"); });
       });
     };
-    var plant = fgSprite(360, 620, k, function (g) {
+    var plant = fgSprite(760, 640, k, function (g) {
+      g.translate(200, 20);
       for (var i = 0; i < 14; i++) { var a = -Math.PI / 2 + (i - 7) * 0.2; g.save(); g.translate(180, 420); g.rotate(a + Math.PI / 2); C.ellShape(g, 0, -150 - (i % 3) * 40, 40, 150, i % 2 ? "#4f9a5a" : "#64b06a", { prints: 0 }); g.restore(); }
       box(g, 90, 400, 180, 200, "#d98a5a", { r: 16, grad: ["#e39a6a", "#c97a4a"] });
       // adornos navidenos en la planta
@@ -383,7 +384,7 @@
     [{ c: chair("#b8323a", "#a52a32"), x: 2350, y: 1620, w: 340, h: 520, z: 2140 },
       { c: chair("#2b2d33"), x: 5480, y: 1600, w: 340, h: 520, z: 2120 },
       { c: chair("#33353c", "#3a3c44"), x: 7020, y: 1660, w: 380, h: 580, z: 2240 },
-      { c: plant, x: 4560, y: 1420, w: 360, h: 620, z: 2040 }].forEach(function (o) { list.push(o); });
+      { c: plant, x: 4360, y: 1400, w: 760, h: 640, z: 2040 }].forEach(function (o) { list.push(o); });
     list.forEach(function (o) {
       N.add({ scene: "lab", static: true, z: o.z, fg: true, draw: function (g) { g.drawImage(o.c, o.x, o.y, o.w, o.h); } });
     });
