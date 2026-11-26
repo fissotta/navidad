@@ -162,9 +162,7 @@
     g.beginPath(); C.rrect(cx - w / 2, cy - h / 2, w, h, 0.01)(g); g.fill(); g.stroke();
     g.fillStyle = col; g.fillRect(cx - w / 2 + 0.003, cy - h / 2 + 0.003, w - 0.006, 0.016);
     g.fillStyle = "#c9c2b8"; g.fillRect(cx - 0.012, cy - h / 2 - 0.004, 0.024, 0.008);
-    var fs = 0.024; g.font = "bold " + fs + "px 'Trebuchet MS', sans-serif";
-    var tw = g.measureText(d.name).width; if (tw > w * 0.88) { fs *= w * 0.88 / tw; g.font = "bold " + fs + "px 'Trebuchet MS', sans-serif"; }
-    g.fillStyle = "#2a2020"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(d.name, cx, cy + 0.011);
+    C.text(g, d.name, cx, cy + 0.011, 0.024, "bold", "#2a2020", w * 0.88);
     g.restore();
   }
   function arm(g, sleeve, skin) {
@@ -277,7 +275,7 @@
       g.save(); g.beginPath(); C.poly([[-0.012, -0.18], [0.012, -0.18], [0.012, -0.12], [0.03, -0.09], [0.03, 0.03], [-0.03, 0.03], [-0.03, -0.09], [-0.012, -0.12]])(g);
       g.fillStyle = "rgba(220,235,225,0.55)"; g.fill(); g.clip(); g.fillStyle = "#b98b5a"; g.fillRect(-0.04, -0.07, 0.08, 0.11); g.restore();
       g.fillStyle = "#f4ead8"; g.fillRect(-0.028, -0.04, 0.056, 0.04);
-      g.fillStyle = "#6b3a1e"; g.font = "bold 0.02px sans-serif"; g.textAlign = "center"; g.fillText("COLA", 0, -0.025); g.fillText("MONO", 0, -0.006);
+      C.text(g, "COLA", 0, -0.029, 0.018, "bold", "#6b3a1e"); C.text(g, "MONO", 0, -0.011, 0.018, "bold", "#6b3a1e");
     });
     P("ornament", [-0.05, -0.08, 0.05, 0.05], function (g) {
       C.rrShape(g, -0.012, -0.065, 0.024, 0.018, 0.004, "#d4b24a", { prints: 0 });
@@ -532,7 +530,8 @@
         var F = N.UI, fs = Math.round(26 * F), pad = 14 * F;
         g.save(); g.globalAlpha = a * 0.96;
         g.font = "600 " + fs + "px 'Trebuchet MS', 'Segoe UI', sans-serif";
-        var lines = wrap(g, this.text, 420 * F), w = 0;
+        if (!this.lines || this.linesF !== F) { this.lines = wrap(g, this.text, 420 * F); this.linesF = F; }
+        var lines = this.lines, w = 0;
         lines.forEach(function (l) { w = Math.max(w, g.measureText(l).width); });
         var bw = w + pad * 2, bh = lines.length * fs * 1.2 + pad * 1.4;
         var bx = N.clamp(sp[0] - bw / 2, 8, N.CW - bw - 8), by = sp[1] - bh - 30 * F - (1 - a) * 10 * F;

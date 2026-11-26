@@ -50,7 +50,7 @@ baja.** La TV solo deja sonar audio después del primer toque. Botón ◀) abajo
 
 ## Rendimiento (TV antigua)
 
-En la TV (Tizen) se dibuja a ~30 cuadros por segundo. El lab y los personajes se pintan una sola vez al cargar
+En la TV (Tizen) se dibuja a ~30 cuadros por segundo y a 720 líneas (la TV lo agranda; `?alto=1080` para más definición). El lab y los personajes se pintan una sola vez al cargar
 (en trozos) y luego solo se mueven; la página pesa ~150 KB. Se recarga sola a las 5 AM.
 
 ## Parámetros de prueba (en la URL)

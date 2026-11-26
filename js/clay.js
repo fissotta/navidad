@@ -89,6 +89,17 @@
     }
   };
 
+  /* Texto dentro de una pieza escalada: se dibuja en pixeles reales (los navegadores antiguos
+   * no dibujan fuentes de menos de 1 px). size y maxW en unidades de la pieza. */
+  C.text = function (g, txt, x, y, size, weight, color, maxW) {
+    var U = C._U || 1;
+    g.save(); g.scale(1 / U, 1 / U);
+    var fs = size * U; g.font = (weight || "") + " " + fs.toFixed(1) + "px 'Trebuchet MS', sans-serif";
+    if (maxW) { var tw = g.measureText(txt).width; if (tw > maxW * U) { fs *= maxW * U / tw; g.font = (weight || "") + " " + fs.toFixed(1) + "px 'Trebuchet MS', sans-serif"; } }
+    g.fillStyle = color; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(txt, x * U, y * U);
+    g.restore();
+  };
+
   /* Formas basicas */
   C.ell = function (cx, cy, rx, ry) { return function (g) { g.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); }; };
   C.rrect = function (x, y, w, h, r) {

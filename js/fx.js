@@ -129,12 +129,16 @@
           }
           v *= lt.on * lt.level;
           g.fillStyle = col; g.beginPath(); g.ellipse(b.x, b.y, 5, 8, 0, 0, 7); g.fill();
-          if (v > 0.05) {
-            g.globalCompositeOperation = "lighter"; g.globalAlpha = v * (0.55 + night * 0.45);
-            var s = 34 + night * 18; g.drawImage(C.glow(col), b.x - s, b.y - s, s * 2, s * 2);
-            g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
-          }
+          b.v = v; b.col = col;
         }
+        // brillos en una sola pasada (cambiar el modo de mezcla por cada ampolleta es caro en la TV)
+        g.globalCompositeOperation = "lighter";
+        var s = (N.LOW ? 26 : 34) + night * 18, minV = N.LOW ? 0.3 : 0.05;
+        for (i = 0; i < B.length; i++) {
+          b = B[i]; if (b.v <= minV) continue;
+          g.globalAlpha = b.v * (0.55 + night * 0.45); g.drawImage(C.glow(b.col), b.x - s, b.y - s, s * 2, s * 2);
+        }
+        g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
         g.restore();
       } });
     });
@@ -168,7 +172,7 @@
   FX.initTV = function () {
     var x = tvR[0] + 8, y = tvR[1] + 8, w = tvR[2] - 16, h = tvR[3] - 18;
     var flames = [];
-    for (var i = 0; i < 16; i++) flames.push({ x: Math.random(), ph: Math.random() * 6, s: 0.5 + Math.random() * 0.5 });
+    for (var i = 0; i < (N.LOW ? 7 : 16); i++) flames.push({ x: Math.random(), ph: Math.random() * 6, s: 0.5 + Math.random() * 0.5 });
     N.add({ scene: "lab", static: true, z: 2, draw: function (g) {
       if (TV.ch === "off") return;
       var t = N.time - TV.t0, a = Math.min(1, t / 1.2);

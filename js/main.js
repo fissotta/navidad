@@ -1,13 +1,13 @@
 /* Arranque: lienzo, bucle de dibujo (30 cps en la TV), toques y boton de sonido. */
 (function () {
   "use strict";
-  N.VER = "4";
+  N.VER = "5";
   var cv = document.getElementById("c"), g = cv.getContext("2d", { alpha: false });
   var cam = N.cam;
 
   function size() {
     var dpr = window.devicePixelRatio || 1, w = innerWidth * dpr, h = innerHeight * dpr;
-    var maxH = N.LOW ? 1080 : N.Q.has("bajo") ? 1080 : 2160;
+    var maxH = parseFloat(N.Q.get("alto")) || (N.LOW ? 720 : N.Q.has("bajo") ? 1080 : 2160);   // en la TV se dibuja a 720 lineas y la pantalla lo agranda
     var k = Math.min(1, maxH / h);
     N.CW = cv.width = Math.round(w * k); N.CH = cv.height = Math.round(h * k);
     N.UI = N.CH / 1080;
